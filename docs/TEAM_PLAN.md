@@ -21,16 +21,21 @@ Develop a professional-grade online medicine shop. The project is split into two
 ## Development Roadmap
 
 ### Phase 1: Foundation (Frontend)
-- Define `DESIGN_SYSTEM.md` (colors, typography).
-- Scaffolding React/Vite project according to `ARCHITECTURE.md`.
+- [x] Define `DESIGN_SYSTEM.md` (colors, typography, elevations, spacing). *(Completed by Member 1)*
+- [x] Frontend architecture setup adhering to Vanilla ES6 Modular structure in `ARCHITECTURE.md`. *(Completed by Member 1)*
 
 ### Phase 2: Core Frontend Modules
 - **Modular Development**: Each member builds out their assigned feature module (Catalog, Cart, Auth, UI).
+  - [x] **Member 1 (Soham Shinde)**: Foundation, Homepage, UI Components, Prescription Upload modal, Toast & Dialog system. *(Completed)*
+  - [ ] **Member 2 (Arindam Sarkar)**: Product Catalog, Discovery, Filtering.
+  - [ ] **Member 3 (Adithya H K)**: Product Detail, Cart Logic, Persistence.
+  - [ ] **Member 4 (Muhammad Abrar Aamir Sheikh)**: Auth Flow, Checkout, Profile.
 - **Communication Contract**: All frontend data binding MUST use the interface definitions specified in `docs/API_CONTRACT.md`.
 
-### Phase 3: Mock Intergration
-- Replace UI static content with simulated API calls reading from `frontend/data/products.json`.
-- This ensures the React components are ready to receive live data when the backend arrives.
+### Phase 3: Mock Integration
+- [x] Provide simulated API calls in `frontend/js/api.js` and mock data in `frontend/js/data.js`. *(Completed by Member 1)*
+- Replace UI static content with simulated API calls reading from mock contracts.
+- This ensures all frontend components are ready to receive live data when the Spring Boot backend arrives.
 
 ### Phase 4: Frontend Polish
 - Responsiveness, performance optimization, and integration of all modules in a single SPA.
