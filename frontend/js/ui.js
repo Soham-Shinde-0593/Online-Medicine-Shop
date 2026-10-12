@@ -119,7 +119,8 @@ export function renderCategories(categories, containerSelector = '#categories-co
   if (!container || !categories) return;
 
   container.innerHTML = categories.map(cat => {
-    const isActive = cat.id === activeCategoryId;
+    const isActive = activeCategoryId !== 'all' &&
+      (cat.id === activeCategoryId || cat.name.toLowerCase() === String(activeCategoryId).toLowerCase());
     return `
       <div 
         class="category-card ${isActive ? 'active' : ''}" 

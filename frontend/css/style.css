@@ -888,6 +888,54 @@ ul, ol {
   color: var(--text-main);
 }
 
+.catalog-refinements {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.catalog-select-label,
+.catalog-stock-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.catalog-select {
+  min-height: 38px;
+  padding: 7px 30px 7px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-main);
+  font: inherit;
+}
+
+.catalog-stock-toggle input { accent-color: var(--primary-color); }
+
+.catalog-reset {
+  border: 0;
+  background: transparent;
+  color: var(--primary-color);
+  font: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.catalog-reset:hover { text-decoration: underline; }
+
+@media (max-width: 760px) {
+  .catalog-controls { align-items: flex-start; }
+  .catalog-refinements { justify-content: flex-start; width: 100%; }
+  .catalog-select-label { flex: 1 1 180px; justify-content: space-between; }
+}
+
 /* ==========================================================================
    10. PRODUCT GRID & CARDS
    ========================================================================== */

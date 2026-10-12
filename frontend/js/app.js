@@ -32,6 +32,9 @@ const state = {
   categories: [],
   activeCategory: 'all',
   searchQuery: '',
+  productType: 'all',
+  inStockOnly: false,
+  sortBy: 'recommended',
 };
 
 /**
@@ -79,6 +82,7 @@ async function initHomepage() {
 
     // Setup Filter Pills
     setupFilterPills(categories);
+    setupCatalogRefinements();
 
     // Render initial medicines
     renderFilteredProducts();
@@ -108,23 +112,31 @@ function renderFilteredProducts() {
   let filtered = [...state.allMedicines];
 
   if (state.activeCategory && state.activeCategory !== 'all') {
-    const activeLower = state.activeCategory.toLowerCase();
-    filtered = filtered.filter(m => m.category.toLowerCase().includes(activeLower));
+    const activeLower = state.activeCategory.toLowerCase().trim();
+    filtered = filtered.filter(m => (m.category || '').toLowerCase().includes(activeLower));
   }
 
   if (state.searchQuery && state.searchQuery.trim() !== '') {
     const q = state.searchQuery.toLowerCase().trim();
-    filtered = filtered.filter(m => 
-      m.name.toLowerCase().includes(q) ||
-      m.brand.toLowerCase().includes(q) ||
-      m.category.toLowerCase().includes(q) ||
-      m.description.toLowerCase().includes(q)
-    );
+    filtered = filtered.filter(m => [m.name, m.brand, m.category, m.description, m.dosage]
+      .some(value => String(value || '').toLowerCase().includes(q)));
   }
+
+  if (state.productType === 'otc') filtered = filtered.filter(m => !m.prescriptionRequired);
+  if (state.productType === 'rx') filtered = filtered.filter(m => Boolean(m.prescriptionRequired));
+  if (state.inStockOnly) filtered = filtered.filter(m => m.inStock !== false && (m.stockQuantity == null || m.stockQuantity > 0));
+  const sorters = {
+    'name-asc': (a, b) => a.name.localeCompare(b.name),
+    'price-asc': (a, b) => Number(a.price) - Number(b.price),
+    'price-desc': (a, b) => Number(b.price) - Number(a.price),
+  };
+  if (sorters[state.sortBy]) filtered.sort(sorters[state.sortBy]);
 
   // Update results count indicator
   const countEl = document.getElementById('results-count-number');
   if (countEl) countEl.textContent = filtered.length;
+  const totalEl = document.getElementById('results-total-number');
+  if (totalEl) totalEl.textContent = state.allMedicines.length;
 
   renderProducts(filtered, '#product-container');
 
@@ -134,6 +146,11 @@ function renderFilteredProducts() {
     resetBtn.addEventListener('click', () => {
       state.activeCategory = 'all';
       state.searchQuery = '';
+      state.productType = 'all';
+      state.inStockOnly = false;
+      state.sortBy = 'recommended';
+      syncCatalogControls();
+      renderCategories(state.categories, '#categories-container', 'all');
       
       const searchInputs = document.querySelectorAll('.header-search-input');
       searchInputs.forEach(i => i.value = '');
@@ -146,6 +163,39 @@ function renderFilteredProducts() {
       renderFilteredProducts();
     });
   }
+}
+
+function syncCatalogControls() {
+  document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.classList.toggle('active', pill.dataset.category?.toLowerCase() === state.activeCategory.toLowerCase());
+  });
+  const type = document.getElementById('catalog-type');
+  const stock = document.getElementById('catalog-in-stock');
+  const sort = document.getElementById('catalog-sort');
+  if (type) type.value = state.productType;
+  if (stock) stock.checked = state.inStockOnly;
+  if (sort) sort.value = state.sortBy;
+}
+
+function setupCatalogRefinements() {
+  const sort = document.getElementById('catalog-sort');
+  const type = document.getElementById('catalog-type');
+  const stock = document.getElementById('catalog-in-stock');
+  const reset = document.getElementById('catalog-reset');
+  sort?.addEventListener('change', () => { state.sortBy = sort.value; renderFilteredProducts(); });
+  type?.addEventListener('change', () => { state.productType = type.value; renderFilteredProducts(); });
+  stock?.addEventListener('change', () => { state.inStockOnly = stock.checked; renderFilteredProducts(); });
+  reset?.addEventListener('click', () => {
+    state.activeCategory = 'all';
+    state.searchQuery = '';
+    state.productType = 'all';
+    state.inStockOnly = false;
+    state.sortBy = 'recommended';
+    document.querySelectorAll('.header-search-input').forEach(input => { input.value = ''; });
+    syncCatalogControls();
+    renderCategories(state.categories, '#categories-container', 'all');
+    renderFilteredProducts();
+  });
 }
 
 /**
@@ -164,9 +214,7 @@ function setupCategoryCardListeners() {
       state.activeCategory = catName;
 
       // Update pill states
-      document.querySelectorAll('.filter-pill').forEach(pill => {
-        pill.classList.toggle('active', pill.dataset.category?.toLowerCase() === catName.toLowerCase());
-      });
+      syncCatalogControls();
 
       renderFilteredProducts();
 
@@ -176,6 +224,14 @@ function setupCategoryCardListeners() {
         targetSection.scrollIntoView({ behavior: 'smooth' });
       }
     }
+  });
+
+  container.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const card = e.target.closest('.category-card');
+    if (!card) return;
+    e.preventDefault();
+    card.click();
   });
 }
 
@@ -203,6 +259,8 @@ function setupFilterPills(categories) {
     pill.classList.add('active');
 
     state.activeCategory = pill.dataset.category;
+    renderCategories(state.categories, '#categories-container', state.activeCategory);
+    syncCatalogControls();
     renderFilteredProducts();
   });
 }
@@ -223,6 +281,7 @@ function setupSearchListeners() {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
         state.searchQuery = e.target.value;
+        document.querySelectorAll('.header-search-input').forEach(other => { if (other !== input) other.value = input.value; });
         renderFilteredProducts();
       }, 180);
     });

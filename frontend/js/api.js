@@ -35,7 +35,7 @@ export async function fetchData(endpoint) {
 /**
  * Fetch all medicines with optional category and search query filters
  */
-export async function fetchMedicines({ category = 'all', query = '', featuredOnly = false } = {}) {
+export async function fetchMedicines({ category = 'all', query = '', featuredOnly = false, productType = 'all', inStockOnly = false, sortBy = 'recommended' } = {}) {
   await delay(SIMULATED_LATENCY_MS);
   let results = [...mockMedicines];
 
@@ -50,13 +50,19 @@ export async function fetchMedicines({ category = 'all', query = '', featuredOnl
 
   if (query && query.trim() !== '') {
     const q = query.toLowerCase().trim();
-    results = results.filter(m => 
-      m.name.toLowerCase().includes(q) ||
-      m.brand.toLowerCase().includes(q) ||
-      m.description.toLowerCase().includes(q) ||
-      m.category.toLowerCase().includes(q)
-    );
+    results = results.filter(m => [m.name, m.brand, m.description, m.category, m.dosage]
+      .some(value => String(value || '').toLowerCase().includes(q)));
   }
+
+  if (productType === 'otc') results = results.filter(m => !m.prescriptionRequired);
+  if (productType === 'rx') results = results.filter(m => Boolean(m.prescriptionRequired));
+  if (inStockOnly) results = results.filter(m => m.inStock !== false && (m.stockQuantity == null || m.stockQuantity > 0));
+  const sorters = {
+    'name-asc': (a, b) => a.name.localeCompare(b.name),
+    'price-asc': (a, b) => Number(a.price) - Number(b.price),
+    'price-desc': (a, b) => Number(b.price) - Number(a.price),
+  };
+  if (sorters[sortBy]) results.sort(sorters[sortBy]);
 
   return results;
 }

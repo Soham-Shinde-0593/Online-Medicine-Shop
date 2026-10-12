@@ -27,7 +27,7 @@ Develop a professional-grade online medicine shop. The project is split into two
 ### Phase 2: Core Frontend Modules
 - **Modular Development**: Each member builds out their assigned feature module (Catalog, Cart, Auth, UI).
   - [x] **Member 1 (Soham Shinde)**: Foundation, Homepage, UI Components, Prescription Upload modal, Toast & Dialog system. *(Completed)*
-  - [ ] **Member 2 (Arindam Sarkar)**: Product Catalog, Discovery, Filtering.
+  - [x] **Member 2 (Arindam Sarkar)**: Product Catalog, Discovery, Filtering (category and searchable fields, OTC/Rx and stock filters, sorting, result counts, reset behavior).
   - [ ] **Member 3 (Adithya H K)**: Product Detail, Cart Logic, Persistence.
   - [ ] **Member 4 (Muhammad Abrar Aamir Sheikh)**: Auth Flow, Checkout, Profile.
 - **Communication Contract**: All frontend data binding MUST use the interface definitions specified in `docs/API_CONTRACT.md`.

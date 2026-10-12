@@ -272,8 +272,27 @@
           <div class="filter-pills" id="filter-pills-container">
             <!-- Dynamically populated via app.js -->
           </div>
-          <div class="results-count">
-            Showing <strong id="results-count-number">0</strong> medicines
+          <div class="catalog-refinements" aria-label="Refine medicine results">
+            <label class="catalog-select-label" for="catalog-sort">Sort
+              <select id="catalog-sort" class="catalog-select">
+                <option value="recommended">Recommended</option>
+                <option value="name-asc">Name: A to Z</option>
+                <option value="price-asc">Price: Low to high</option>
+                <option value="price-desc">Price: High to low</option>
+              </select>
+            </label>
+            <label class="catalog-select-label" for="catalog-type">Product type
+              <select id="catalog-type" class="catalog-select">
+                <option value="all">All products</option>
+                <option value="otc">Over the counter</option>
+                <option value="rx">Prescription required</option>
+              </select>
+            </label>
+            <label class="catalog-stock-toggle"><input id="catalog-in-stock" type="checkbox" /> In stock</label>
+            <button type="button" class="catalog-reset" id="catalog-reset">Clear filters</button>
+            <div class="results-count" aria-live="polite">
+              Showing <strong id="results-count-number">0</strong> of <span id="results-total-number">0</span> medicines
+            </div>
           </div>
         </div>
 
